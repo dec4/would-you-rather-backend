@@ -37,13 +37,11 @@ class BaseRepository:
 
     def update(self, hash_key: str, data: dict, range_key: str = None):
         """Update item in dynamodb. Return new object."""
-        key = self._get_key(hash_key, range_key)
         table = self._get_table()
+        key = self._get_key(hash_key, range_key)
         update_expression = 'SET {}'.format(','.join(f'#{k}=:{k}' for k in data.keys()))
         expression_attribute_values = {f':{k}': v for k, v in data.items()}
         expression_attribute_names = {f'#{k}': k for k in data.keys()}
-        print('update expression', update_expression)
-        print('expression attribute vals', expression_attribute_values)
         response = table.update_item(
             Key=key,
             UpdateExpression=update_expression,
