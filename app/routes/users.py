@@ -2,7 +2,8 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 
 from app.domain.users import users_domain
-from app.domain.users import UsersModel
+from app.schemas.users import CreateUserSchema
+from app.schemas.users import UpdateUserSchema
 
 class UsersRouter:
     def __init__(self, domain) -> None:
@@ -21,7 +22,7 @@ class UsersRouter:
             return self._domain.get_all_users()
 
         @api_router.post('/create')
-        def create_user(user_model: UsersModel):
+        def create_user(user_model: CreateUserSchema):
             return self._domain.create_user(user_model)
 
         @api_router.get('/get/{user_id}')
@@ -32,7 +33,7 @@ class UsersRouter:
                 raise HTTPException(status_code=400, detail='No user found')
 
         @api_router.put('/update')
-        def update_user(user_model: UsersModel):
+        def update_user(user_model: UpdateUserSchema):
             return self._domain.update_user(user_model)
 
         @api_router.delete('/delete/{user_id}')

@@ -20,6 +20,7 @@ class BaseRepository:
         return response.get('Items', [])
 
     def get(self, hash_key: str, range_key: str = None):
+        """Get item from dynamodb"""
         key = self._get_key(hash_key, range_key)
         try:
             table = self._get_table()
@@ -29,11 +30,13 @@ class BaseRepository:
             raise ValueError(e.response['Error']['Message'])
 
     def create(self, data: dict):
+        """Create new item in dynamodb. Return new object."""
         table = self._get_table()
         response = table.put_item(Item=data)
-        return response
+        return data
 
     def update(self, hash_key: str, data: dict, range_key: str = None):
+        """Update item in dynamodb. Return new object."""
         key = self._get_key(hash_key, range_key)
         table = self._get_table()
         update_expression = 'SET {}'.format(','.join(f'#{k}=:{k}' for k in data.keys()))
@@ -46,11 +49,12 @@ class BaseRepository:
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values,
             ExpressionAttributeNames=expression_attribute_names,
-            ReturnValues="UPDATED_NEW"
+            ReturnValues='ALL_NEW'
         )
-        return response
+        return response['Attributes']
 
     def delete(self, hash_key: str, range_key: str = None):
+        """Delete item in dynamodb"""
         table = self._get_table()
         response = table.delete_item(
             Key=self._get_key(hash_key, range_key)
