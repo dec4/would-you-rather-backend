@@ -1,4 +1,5 @@
 import boto3
+import os, json
 
 
 DYNAMODB_URL='http://localhost:8000'
@@ -10,38 +11,54 @@ USERS_TABLE='wyr-users'
 QUESTIONS_TABLE='wyr-questions'
 
 def generate_wyr_tables(ddb):
-    ddb.create_table(
-        TableName=USERS_TABLE,
-        AttributeDefinitions=[
-            { 'AttributeName': 'id', 'AttributeType': 'S' },
-        ],
-        KeySchema=[
-            { 'AttributeName': 'id', 'KeyType': 'HASH' },
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 1,
-            'WriteCapacityUnits': 1,
-        }
-    )
-    print(f'Successfully created table {USERS_TABLE}')
+    try:
+        ddb.create_table(
+            TableName=USERS_TABLE,
+            AttributeDefinitions=[
+                { 'AttributeName': 'id', 'AttributeType': 'S' },
+            ],
+            KeySchema=[
+                { 'AttributeName': 'id', 'KeyType': 'HASH' },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
+            }
+        )
+        print(f'Successfully created table {USERS_TABLE}')
+    except Exception as e:  # todo: properly import ResourceInUseException
+        print(e)
 
-    ddb.create_table(
-        TableName=QUESTIONS_TABLE,
-        AttributeDefinitions=[
-            { 'AttributeName': 'id', 'AttributeType': 'S' },
-        ],
-        KeySchema=[
-            { 'AttributeName': 'id', 'KeyType': 'HASH' },
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 1,
-            'WriteCapacityUnits': 1,
-        }
-    )
-    print(f'Successfully created table {QUESTIONS_TABLE}')
+    try:
+        ddb.create_table(
+            TableName=QUESTIONS_TABLE,
+            AttributeDefinitions=[
+                { 'AttributeName': 'id', 'AttributeType': 'S' },
+            ],
+            KeySchema=[
+                { 'AttributeName': 'id', 'KeyType': 'HASH' },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1,
+            }
+        )
+        print(f'Successfully created table {QUESTIONS_TABLE}')
+    except Exception as e:  # todo: properly import ResourceInUseException
+        print(e)
 
-def load_local_data(ddb):
-    pass
+def load_local_data(ddb, folder_path):
+    json_files = [pos_json for pos_json in os.listdir(folder_path) if pos_json.endswith('.json')]
+    for file_name in json_files:
+        with open(folder_path + file_name, 'r') as f:
+            data = json.load(f)
+        table_name = file_name[:-len('.json')]  # strip .json
+        table = ddb.Table(table_name)
+        for item in data.values():
+            table.put_item(
+                Item=item
+            )
+        print(f'Loaded data for table {table_name}')
 
 
 if __name__  == '__main__':
@@ -53,4 +70,4 @@ if __name__  == '__main__':
         use_ssl=False
     )
     generate_wyr_tables(ddb)
-    load_local_data(ddb)
+    load_local_data(ddb, './local_data/')
