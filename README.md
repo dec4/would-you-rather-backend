@@ -23,4 +23,5 @@ Ensure you have `python3.10`, `docker`, and `docker-compose` installed. This pro
 There are three services defined in the `docker-compose.yml` file. The main app, the DynamoDB database, and dynamodb-admin.
 
 1. Run `docker-compose up` to start all three containers.
-1. Run `python3 local/init_db.py` to create the tables wyr-users and wyr-questions. This is required before using the main application. (TODO: work into docker steps to run automatically on container start)
+1. Run `cd local && python3 init_db.py` to create the tables wyr-users and wyr-questions. This is required before using the main application. (TODO: work into docker steps to run automatically on container start)
+1. Visit http://0.0.0.0:8008/docs to view and test this API. Visit http://0.0.0.0:8001/ to view the DynamoDB Admin page.

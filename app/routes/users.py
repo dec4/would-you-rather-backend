@@ -30,7 +30,7 @@ class UsersRouter:
             try:
                 return self._domain.get_user(user_id)
             except KeyError:
-                raise HTTPException(status_code=400, detail='No user found')
+                raise HTTPException(status_code=404, detail='No user found')
 
         @api_router.put('/update')
         def update_user(user_model: UpdateUserSchema):

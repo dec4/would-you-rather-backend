@@ -4,7 +4,6 @@ from app.schemas.users import CreateUserSchema
 from app.schemas.users import UpdateUserSchema
 from app.repository.users import users_repository
 
-
 class UsersDomain():
     def __init__(self, repository) -> None:
         self._repository = repository
@@ -25,6 +24,5 @@ class UsersDomain():
 
     def delete_user(self, id: str):
         return self._repository.delete_user(id)
-
 
 users_domain = UsersDomain(users_repository)

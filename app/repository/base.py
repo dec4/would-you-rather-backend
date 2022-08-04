@@ -57,7 +57,7 @@ class BaseRepository:
         response = table.delete_item(
             Key=self._get_key(hash_key, range_key)
         )
-        return response
+        return None  # TODO: decide what to return here
 
     def _get_table(self):
         return self._db.Table(self.table_name)

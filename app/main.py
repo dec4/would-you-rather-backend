@@ -1,11 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
 
+from app.routes.questions import questions_router
 from app.routes.users import users_router
 
 
 app = FastAPI(title="Would You Rather Backend")
 app.include_router(users_router)
+app.include_router(questions_router)
 
 @app.get("/")
 def read_root():
